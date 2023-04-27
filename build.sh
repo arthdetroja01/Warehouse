@@ -2,4 +2,6 @@
 
 set -o errexit  # exit on error
 
+poetry install
+
 pip install -r requirements.txt
