@@ -11,18 +11,22 @@ html {
 body {
 	font-family: "Montserrat", sans-serif;
 	background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-		url("warehouse.jpg");
+		url("/static/Images/warehouse_background.png");
+	background-size: 100% auto;
 	background-size: cover;
 	height: 100vh;
 	background-position: center;
 	background-repeat: no-repeat;
 }
-
 .banner {
 	width: 100%;
 }
 .logo {
 	color: white;
+}
+
+.logo-img {
+	width: 32rem;
 }
 
 .navbar {
@@ -139,7 +143,4 @@ body {
 
 .heading span {
 	display: inline-block;
-}
-
-@media screen and (max-width: 600px) {
 }
