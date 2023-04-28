@@ -38,17 +38,6 @@ items = db['Items']
 def index(request):
     return render(request, 'f-index.html')
 
-def returnhome(request):
-    query = {'email': request.session['farmerEmail']}
-    projection = {'email': 1, 'name': 1}
-    users = warehouse.find(query, projection)
-    context = {
-        'user' : users[0]['email'],
-        'name' : users[0]['name']
-    }
-    # print(context.user, context.name)
-    return render(request, 'f-home.html', context=context)
-
 def home(request):
     if request.session.get('isLoggedIn', False) == True:
         query = {'email': request.session.get('farmerEmail')}
@@ -71,20 +60,30 @@ def contact(request):
 def aboutus(request):
     return render(request, 'aboutUs.html')
 
-def login(request):
-    if request.session.get('isLoggedIn', False) == True:
-        query = {'email': request.session.get('farmerEmail')}
-        projection = {'first_name': 1, 'verified': 1, 'email': 1}
+def returnhome(request):
+    query = {'email': request.session['farmerEmail']}
+    projection = {'email': 1, 'verified': 1, 'name': 1}
+    users = warehouse.find(query, projection)
+    context = {
+        'user' : users[0]['email'],
+        'name' : users[0]['name']
+    }
+    return render(request, 'f-home.html', context=context)
 
-        users = farmer.find(query, projection)
+def login(request):
+    # if request.session.get('isLoggedIn', False) == True:
+    #     query = {'email': request.session.get('farmerEmail')}
+    #     projection = {'first_name': 1, 'verified': 1, 'email': 1}
+
+    #     users = farmer.find(query, projection)
         
-        context = {
-            'first_name': users[0]['first_name'],
-            'email': users[0]['email']
-        }
-        return render(request, 'f-home.html', context=context)
-    else:
-        return render(request, 'f-login.html')
+    #     context = {
+    #         'first_name': users[0]['first_name'],
+    #         'email': users[0]['email']
+    #     }
+    #     return render(request, 'f-home.html', context=context)
+    # else:
+    return render(request, 'f-login.html')
 
 def videoCall(request):
     # print(email)
@@ -444,8 +443,8 @@ def itemEntry(request):
         if request.method == 'POST':
             if request.POST.get('itemName') and request.POST.get('minTemp') and request.POST.get('maxTemp') and request.POST.get('storageLife') and request.POST.get('isCrop'):
                 item_name = request.POST.get('itemName')
-                min_temp = request.POST.get('minTemp')
-                max_temp = request.POST.get('maxTemp')
+                min_temp = float(request.POST.get('minTemp'))
+                max_temp = float(request.POST.get('maxTemp'))
                 storage_life = int(request.POST.get('storageLife'))
                 is_crop = request.POST.get('isCrop') 
 
@@ -458,6 +457,12 @@ def itemEntry(request):
                     messages.error(request, 'Item Name already present in the system')
                     return render(request, 'f-add-item.html')
                 
+                # Storage life should be positive and greater than zero
+
+                if storage_life <= 0:
+                    messages.error(request, 'Storage should be positive and greater than zero')
+                    return render(request, 'f-add-item.html')
+                    
                 if is_crop == 'True':
                     is_crop_bool = True
                 else:

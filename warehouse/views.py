@@ -72,13 +72,12 @@ def performVideoCall(request):
 
 def returnhome(request):
     query = {'email': request.session['warehouseEmail']}
-    projection = {'email': 1, 'name': 1}
+    projection = {'email': 1, 'verified': 1, 'name': 1}
     users = warehouse.find(query, projection)
     context = {
         'user' : users[0]['email'],
         'name' : users[0]['name']
     }
-    # print(context.user, context.name)
     return render(request, 'w-home.html', context=context)
 
 def videoCall(request):
