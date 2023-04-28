@@ -38,6 +38,17 @@ items = db['Items']
 def index(request):
     return render(request, 'f-index.html')
 
+def returnhome(request):
+    query = {'email': request.session['farmerEmail']}
+    projection = {'email': 1, 'name': 1}
+    users = warehouse.find(query, projection)
+    context = {
+        'user' : users[0]['email'],
+        'name' : users[0]['name']
+    }
+    # print(context.user, context.name)
+    return render(request, 'f-home.html', context=context)
+
 def home(request):
     if request.session.get('isLoggedIn', False) == True:
         query = {'email': request.session.get('farmerEmail')}
