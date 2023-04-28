@@ -40,13 +40,40 @@ def index(request):
 
 def home(request):
     if request.session.get('isLoggedIn', False) == True:
-        return render(request, 'f-home.html')
+        query = {'email': request.session.get('farmerEmail')}
+        projection = {'first_name': 1, 'verified': 1, 'email': 1}
+
+        users = farmer.find(query, projection)
+
+        context = {
+            'first_name': users[0]['first_name'],
+            'email': users[0]['email']
+        }
+        return render(request, 'f-home.html', context=context)
     else:
         messages.error(request, 'You need to login first!')
         return render(request, 'f-login.html')
 
+def contact(request):
+    return render(request, 'contact.html')
+
+def aboutus(request):
+    return render(request, 'aboutUs.html')
+
 def login(request):
-    return render(request, 'f-login.html')
+    if request.session.get('isLoggedIn', False) == True:
+        query = {'email': request.session.get('farmerEmail')}
+        projection = {'first_name': 1, 'verified': 1, 'email': 1}
+
+        users = farmer.find(query, projection)
+        
+        context = {
+            'first_name': users[0]['first_name'],
+            'email': users[0]['email']
+        }
+        return render(request, 'f-home.html', context=context)
+    else:
+        return render(request, 'f-login.html')
 
 def videoCall(request):
     # print(email)
@@ -75,13 +102,13 @@ def loginValidate(request):
             query = {'email': email, 'password': password}
             projection = {'first_name': 1, 'verified': 1}
 
-            print(request)
             users = farmer.find(query, projection)
             if len(list(users.clone())) == 1 and users[0]['verified']:
                 request.session['isLoggedIn'] = True
                 request.session['farmerEmail'] = email
                 context = {
-                    'user' : users[0]['first_name']
+                    'first_name' : users[0]['first_name'],
+                    'email': email
                 }
                 return render(request, 'f-home.html', context=context)
             elif len(list(users.clone())) == 1 and not users[0]['verified']:
@@ -93,6 +120,8 @@ def loginValidate(request):
         else:
             messages.error(request, "Please enter credentails")
             return render(request, 'f-login.html')
+    else:
+        return render(request, 'f-error.html')
 
 def register(request):
     # current_site = get_current_site(request)
@@ -138,14 +167,14 @@ def registerEntry(request):
 
             users = farmer.find(query, projection)
 
-            pattern = re.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$")
+            pattern = re.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$")
 
             if len(list(users.clone())) != 0:
                 messages.error(request, 'Email already registered!')
                 return render(request, 'f-register.html')
 
             elif pattern.match(password) is None:
-                messages.error(request, 'Your password should be of length between 8 and 12 including atleast one uppercase, one lowercase, one number and one special character (@$!%*?&)')
+                messages.error(request, 'Your password should be of length between 8 and 20 including atleast one uppercase, one lowercase, one number and one special character (@$!%*?&)')
                 return render(request, 'f-register.html')
             else:
                 request.session['isLoggedIn'] = False
@@ -183,13 +212,14 @@ def registerEntry(request):
                 )
                 email_temp.fail_silently = False
                 email_temp.send()
-                messages.success(request, 'Registration successful')
+                messages.success(request, 'Registration successfull !! please check your email for verification.')
                 return render(request, 'f-login.html')
 
         else:
             messages.error(request, "Enter details in all the fields")
             return render(request, 'f-register.html')
-
+    else:
+        return render(request, 'f-error.html')
 
 def logout(request):
     request.session['isLoggedIn'] = False
@@ -210,6 +240,12 @@ def showNearbyWarehouses(request):
                 latitude = float(request.POST.get('latitude'))
                 longitude = float(request.POST.get('longitude'))
                 target_distance = float(request.POST.get('distance'))
+
+                print("Reached here")
+                if target_distance < 0:
+                    messages.error(request, 'Distance value invalid')
+                    return render(request, 'f-search-nearby-warehouses.html')
+
                 query = {}
                 projection = {'_id': 0}
                 warehouse_list = warehouse.find(query, projection)
