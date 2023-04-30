@@ -60,7 +60,7 @@ body {
 	height: 100vh;
 	font-family: "Manrope", sans-serif;
 	font-size: 1.6rem;
-		background-color: var(--color-background);
+	background-color: var(--color-background);
 	user-select: none;
 	overflow-x: hidden;
 	overflow: hidden;
@@ -251,7 +251,24 @@ aside .sidebar .message-count {
 }
 
 
+
+/* Container */
+.container .title {
+	font-size: 3.6rem;
+	font-weight: 600;
+	position: relative;
+	color: #2e020a;
+	display: block;
+	margin-left: 13rem;
+}
+
+
 /* Main */
+.page--title {
+	font-size: 4.2rem;
+	margin: 1.6rem 0 0 2rem;
+	display: block;
+}
 
 .content {
 	margin-top: 2rem;
@@ -268,175 +285,51 @@ main {
 }
 
 
-/* Container */
-.page--title {
-	font-size: 4.2rem;
-	margin: 1.6rem 0 0 2rem;
-	display: block;
+.show--registration{
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+}
+
+table{
+    border-collapse:collapse;
+    box-shadow: 0 5px 1px var(--color-info-light);
+    background-color: var(--color-white);
+    text-align: left;
+    overflow: hidden;
+}
+
+table thead{
+    box-shadow: 0 5px 10px var(--color-info-light);
+}
+
+table thead th{
+    padding: 1rem 4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-size: 1.4rem;
+    font-weight: 900; 
+    border-right: 2px solid var(--color-light--2);
+    text-align: center;
+    border-left: 2px solid var(--color-light--2);
+}
+
+table tbody td{
+    padding: 1rem 2rem; 
+    text-align: center  ;
+}
+
+.Modify-btn{
+    display: flex;
+    justify-content: center;
 }
 
 
-main {
-	margin: 4rem 2.4rem 0 2.4rem;
-	width: 100%;
-}
-
-.content form .user-details {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	margin: 20px 0 12px 0;
-}
-
-form .user-details .input-box {
-	margin-bottom: 1.8rem;
-	width: calc(100% / 2 - 20px);
-	
-}
-form .input-box label.details {
-	font-size: 1.4rem;
-	display: block;
-	font-weight: 600;
-	margin: 0 0 0.2rem 1rem ;
-	color: #555;
-	letter-spacing: 0.05rem;
-}
-label::after { 
-    content: "*";
-    color: red;
-	margin-left: 0.1rem;
-}
-
-#warehouseEmail{
-    display: block;
-    width: 100%;
-}
-
-.user-details .input-box input {
-	height: 6rem;
-	width: 90%;
-	outline: none;
-	font-size: 16px;
-	border-radius: 10px;
-	padding-left: 1.5rem;
-	border: 1px solid #ccc;
-	border-bottom-width: 2px;
-	transition: all 0.3s ease;
-}
-.user-details .input-box input:focus,
-.user-details .input-box input:valid {
-	border-color: #ec546f;
-}
-form .gender-details .gender-title {
-	font-size: 20px;
-	font-weight: 500;
-}
-form .category {
-	display: flex;
-	width: 80%;
-	margin: 14px 0;
-	justify-content: space-between;
-}
-form .category label {
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-}
-form .category label .dot {
-	height: 18px;
-	width: 18px;
-	border-radius: 50%;
-	margin-right: 10px;
-	background: #d9d9d9;
-	border: 5px solid transparent;
-	transition: all 0.3s ease;
-}
-
-form .button {
-	height: 45px;
-
-}
-form .button input {
-	width: 48rem;
-	height: 100%;
-
-	margin: 4rem 0 0 0.8rem;
-
-	border-radius: 8px;
-	border: none;
-	color: #fff;
-	font-size: 18px;
-	font-weight: 500;
-	letter-spacing: 1px;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	background-color: #e40b31;
-}
+table 
 form .button input:hover {
 	/* transform: scale(0.99); */
 	background-color: #e40b31;
 }
-
-.custom-select{
-    display: flex;
-}
-
-
-
-.select{
-    width: 80%;
-    height: 5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding-left: 5px;
-    padding: 10px;
-    font-size: 18px;
-
-    color: #555;
-    background-color: rgb(255, 255, 255);
-    background-image: none;
-}
-
-.select:hover{
-        border: 2px solid #ec546f;
-            border-bottom-width: 3px;
-}
-.select option {
-    font-size: 18px;
-    color: #555;
-    background-color: rgb(247, 247, 247);
-    background-image: none;
-    font-size: 18px;
-    height: 50px;
-    padding: 15px;
-    border: 1px solid rgb(41, 18, 18);
-}
-
-/* Button */
-.add-item-btn{
-    display: inline-block;
-    outline: 0;
-    cursor: pointer;
-    border-radius: 8px;
-    border: 0.2rem solid var(--color-primary);
-    color: #fff;
-    background-color: var(--color-primary);
-    /* padding: 0 0.4rem; */
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.07) 0px 2px 4px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1.5px 0px;
-    font-weight: 800;
-    font-size: 16px;
-    height: 4rem;
-    width: 48rem;
-    margin-top: 2rem;
-}
-    .add-item-btn:hover{
-        background: 0 0;
-        color: var(--color-primary);
-    }
-                
-
-/* Media queries */
 @media (max-width: 584px) {
 	.container {
 		max-width: 100%;
@@ -456,8 +349,6 @@ form .button input:hover {
 		width: 5px;
 	}
 }
-
-
 @media (max-width: 459px) {
 	.container .content .category {
 		flex-direction: column;
@@ -468,6 +359,7 @@ form .button input:hover {
 .important--mark{
 	color: #e40b31;
 }
+
 
 aside .logo {
 	display: flex;
@@ -481,6 +373,188 @@ aside .logo img {
 }
 
 
-.addItem--div{
+/* Button Css */
+/* CSS */
+.modify-btn {
+  align-items: center;
+  background-color: #ffffef;
+  background-position: 0 0;
+  border: 1px solid #e1e1ce;
+  border-radius: 0.6rem;
+  box-sizing: border-box;
+  color: #5a5a43;
+  cursor: pointer;
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 33.4929px;
+  list-style: outside url(https://www.smashingmagazine.com/images/bullet.svg) none;
+  padding: 0.05rem 0.1rem;
+  text-decoration: none;
+  text-shadow: none;
+  text-underline-offset: 1px;
+  transition: border .2s ease-in-out,box-shadow .2s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  word-break: break-word;
+
+  justify-content: center;
+}
+
+.modify-btn:active,
+.modify-btn:hover,
+.modify-btn:focus {
+  outline: 0;
+}
+
+
+.modify-btn:active {
+  background-color: #5a5a43;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
+
+.modify-btn:hover {
+  background-color: #f0f0e7;
+  border-color: #cacaaa;
+}
+
+.modify-btn:active:hover,
+.modify-btn:focus:hover,
+.modify-btn:focus {
+  background-color: #5a5a43;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
+
+
+
+/* Delete button */
+
+/* CSS */
+.button-45 {
+  align-items: center;
+  background-color: #FFE7E7;
+  background-position: 0 0;
+  border: 1px solid #FEE0E0;
+  border-radius: 0.6rem;
+  box-sizing: border-box;
+  color: #D33A2C;
+  cursor: pointer;
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 33.4929px;
+  list-style: outside url(https://www.smashingmagazine.com/images/bullet.svg) none;
+  padding: 0.05rem 1.2rem;
+  text-align: left;
+  text-decoration: none;
+  text-shadow: none;
+  text-underline-offset: 1px;
+  transition: border .2s ease-in-out,box-shadow .2s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  word-break: break-word;
+
+  justify-content: center;
+}
+
+.button-45:active,
+.button-45:hover,
+.button-45:focus {
+  outline: 0;
+}
+
+
+.button-45:active {
+  background-color: #D33A2C;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
+
+.button-45:hover {
+  background-color: #FFE3E3;
+  border-color: #FAA4A4;
+}
+
+.button-45:active:hover,
+.button-45:focus:hover,
+.button-45:focus {
+  background-color: #D33A2C;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
+
+
+
+/* Alert */
+.alert {
+	min-height: 67px;
+	width: 560px;
+	max-width: 90%;
+	border-radius: 12px;
+	padding: 16px 22px 17px 20px;
 	display: flex;
+	align-items: center;
+}
+
+.warning--message {
+	position: fixed;
+	top: 2rem;
+	left: 15%;
+}
+
+.messages {
+	color: white;
+	list-style: none;
+	font-size: 1.6rem;
+	margin-left: 4rem;
+}
+
+.alert-error {
+	background: #e41749;
+}
+.icon__wrapper {
+	height: 34px;
+	width: 34px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.253);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.icon__wrapper span {
+	font-size: 21px;
+	color: #fff;
+}
+.alert p {
+	color: #fff;
+	font-family: Verdana;
+	margin-left: 10px;
+}
+.alert p a,
+.alert p a:visited,
+.alert p a:active {
+	color: #fff;
+}
+.alert .open {
+	margin-left: auto;
+	margin-right: 5px;
+}
+.alert .close,
+.alert .open {
+	color: #fff;
+	transition: transform 0.5s;
+	font-size: 18px;
+	cursor: pointer;
+}
+.alert .close:hover,
+.alert .open:hover {
+	transform: scale(1.3);
 }

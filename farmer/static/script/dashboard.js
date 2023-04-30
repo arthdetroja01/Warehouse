@@ -18,6 +18,7 @@ const lastdateEl = document.querySelector(".weather-update-date");
 const wheatPriceEl = document.querySelector(".wheat--price");
 const ricePriceEl = document.querySelector(".rice--price");
 const cornPriceEl = document.querySelector(".corn--price");
+const MilkPriceEL = document.querySelector(".milk--price");
 // Urls
 
 const NEWS_API =
@@ -207,9 +208,9 @@ const agriNews = [
 //show sidebar
 
 //close sidebar
-closeBtn.addEventListener("click", () => {
-	sideMenu.style.display = "none";
-});
+// closeBtn.addEventListener("click", () => {
+// 	sideMenu.style.display = "none";
+// });
 
 //change
 
@@ -305,9 +306,14 @@ async function checkWeather(coords) {
 	humidity.innerHTML = `${weather_data.current.humidity}%`;
 	wind_speed.innerHTML = `${weather_data.current.wind_kph}Km/H`;
 
+	console.log(weather_data.current.condition.text);
+
 	switch (weather_data.current.condition.text) {
 		case "Overcast":
 			weather_img.src = "/static/Images/Weather/cloud.png";
+			break;
+		case `Patchy rain possible ` || "Patchy light rain with thunder":
+			weather_img.src = "/static/Images/Weather/lightRain.png";
 			break;
 		case "Sunny":
 			weather_img.src = "/static/Images/Weather/clear.png";
@@ -390,6 +396,20 @@ const commodity = [
 		},
 		unit: "per metric ton",
 	},
+
+	{
+		success: true,
+		timestamp: 1682861243,
+		date: "2023-04-30",
+		base: "INR",
+		symbol: "MILK",
+		rates: {
+			open: 65.70444063974538,
+			high: 65.70444150962708,
+			low: 65.70444063974523,
+			close: 65.70444063974538,
+		},
+	},
 ];
 
 // cropsToMonitor.forEach(async (crop) => {
@@ -399,7 +419,9 @@ const commodity = [
 // });
 
 const response = commodity;
-console.log(response);
-cornPriceEl.innerHTML = `${response[0].rates.high.toFixed(2)}`;
-ricePriceEl.innerHTML = `  ${response[1].rates.high.toFixed(2)}`;
-wheatPriceEl.innerHTML = `  ${response[2].rates.high.toFixed(2)}`;
+console.log(response[3].rates.high);
+console.log(MilkPriceEL);
+cornPriceEl.innerHTML = `${response[0].rates.high.toFixed(2)}  per quintal`;
+ricePriceEl.innerHTML = `  ${response[1].rates.high.toFixed(2)} per quintal`;
+wheatPriceEl.innerHTML = `  ${response[2].rates.high.toFixed(2)} per quintal`;
+MilkPriceEL.innerHTML = `  ${response[3].rates.high.toFixed(2)} per liter`;

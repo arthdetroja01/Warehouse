@@ -60,10 +60,13 @@ def contact(request):
 def aboutus(request):
     return render(request, 'aboutUs.html')
 
+def generateReportPage(request):
+    return render(request, 'aboutUs.html')
+
 def returnhome(request):
     query = {'email': request.session['farmerEmail']}
     projection = {'email': 1, 'verified': 1, 'name': 1}
-    users = warehouse.find(query, projection)
+    users = farmer.find(query, projection)
     context = {
         'user' : users[0]['email'],
         'name' : users[0]['name']
@@ -71,18 +74,6 @@ def returnhome(request):
     return render(request, 'f-home.html', context=context)
 
 def login(request):
-    # if request.session.get('isLoggedIn', False) == True:
-    #     query = {'email': request.session.get('farmerEmail')}
-    #     projection = {'first_name': 1, 'verified': 1, 'email': 1}
-
-    #     users = farmer.find(query, projection)
-        
-    #     context = {
-    #         'first_name': users[0]['first_name'],
-    #         'email': users[0]['email']
-    #     }
-    #     return render(request, 'f-home.html', context=context)
-    # else:
     return render(request, 'f-login.html')
 
 def videoCall(request):
@@ -172,6 +163,7 @@ def registerEntry(request):
             phone_num = request.POST.get('phoneNum')
             email = request.POST.get('email')
             password = request.POST.get('password')
+
             query = {'email': email}
             projection = {'_id': 1}
 
@@ -222,7 +214,7 @@ def registerEntry(request):
                 )
                 email_temp.fail_silently = False
                 email_temp.send()
-                messages.success(request, 'Registration successfull !! please check your email for verification.')
+                messages.success(request, 'Registration successfull !! please check your email for verification')
                 return render(request, 'f-login.html')
 
         else:
@@ -251,7 +243,6 @@ def showNearbyWarehouses(request):
                 longitude = float(request.POST.get('longitude'))
                 target_distance = float(request.POST.get('distance'))
 
-                print("Reached here")
                 if target_distance < 0:
                     messages.error(request, 'Distance value invalid')
                     return render(request, 'f-search-nearby-warehouses.html')
@@ -291,29 +282,6 @@ def searchNearbyWarehouses(request):
         messages.error(request, 'You need to login first!')
         return render(request, 'f-login.html')
 
-# def storedGoods(request):
-#     if request.session['isLoggedIn'] == True:
-#         query = {
-#             'crops_stored': {
-#                 'farmer_id': request.session['farmerId']
-#             }
-#         }
-
-#         projection = {}
-
-#         warehouse_list = warehouse.find(query, projection)
-#         farmer_id = request.session['farmerId']
-
-#         context = {
-#             'warehouse_list': warehouse_list,
-#             'farmer_id': farmer_id,
-#         }
-#         return render(request, 'f-stored-goods.html', context=context)
-#     else:
-#         messages.error(request, 'You need to Login first!')
-#         return render(request, 'f-login.html')
-
-
 def makeReservation(request):
     if request.session.get('isLoggedIn', False) == True:
         query = {}
@@ -333,6 +301,10 @@ def makeReservation(request):
 def reservationEntry(request):
     if request.session.get('isLoggedIn', False) == True:
         if request.method == 'POST':
+            query = {}
+            projection = {}
+
+            items_list = items.find(query, projection)
             if request.POST.get('warehouseEmail') and request.POST.get('itemName') and request.POST.get('startDate') and request.POST.get('endDate') and request.POST.get('quantity'):
                 warehouse_email = request.POST.get('warehouseEmail')
                 item_name = request.POST.get('itemName')
@@ -341,10 +313,9 @@ def reservationEntry(request):
                 quantity = float(request.POST.get('quantity'))
                 reservation_id = str(uuid.uuid4())
 
-                # print(start_date)
-                # print(end_date)
-
-                query = {}
+                query = {
+                    'warehouse_email': warehouse_email
+                }
                 projection = {}
                 items_stored_list = items_stored.find(query, projection)
 
@@ -353,13 +324,14 @@ def reservationEntry(request):
                 }
                 
                 projection = {}
-
                 warehouse_details = warehouse.find(query, projection)
 
                 if len(list(warehouse_details.clone())) == 0:
+                    context = {
+                        'items': items_list,
+                    }
                     messages.error(request, 'Warehouse not found!')
-                    return redirect('farmer:makeReservation')
-
+                    return render(request, 'f-make-reservation.html', context=context)
                 
                 quantity_stored = 0
                 format = '%Y-%m-%d'
@@ -369,19 +341,26 @@ def reservationEntry(request):
 
                 # print(start_date_obj)
                 # print(end_date_obj)
+                # print()
 
                 if start_date_obj > end_date_obj:
+                    context = {
+                        'items': items_list,
+                    }
                     messages.error(request, 'Invalid start date and end date')
-                    return redirect('farmer:makeReservation')
+                    return render(request, 'f-make-reservation.html', context=context)
 
                 for i in items_stored_list:
                     t_start_date = datetime.strptime(i['start_date'], format) 
                     t_end_date = datetime.strptime(i['end_date'], format) 
+                    # print(t_start_date)
+                    # print(t_end_date)
                     if (t_start_date >= start_date_obj and t_start_date <= end_date_obj) or (t_end_date >= start_date_obj and t_end_date <= end_date_obj) or (t_start_date <= start_date_obj and t_end_date >= end_date_obj):
+                        print('here')
+                        print(float(i['quantity']))
                         quantity_stored += float(i['quantity'])
                 
                 if quantity_stored + quantity <= float(warehouse_details[0]['storage_capacity']):
-                    messages.success(request, 'Reservation successful')
                     items_stored.insert_one({
                         'reservation_id': reservation_id,
                         'item_name': item_name,
@@ -394,19 +373,35 @@ def reservationEntry(request):
                     query = {'email': request.session['farmerEmail']}
                     projection = {'email': 1, 'first_name': 1}
                     result = farmer.find(query, projection)
-                    subject = "Your Items are updated!!"
+                    subject = "Your Items are added!!"
                     new_store = f"Reservation ID: {reservation_id} \nWarehouse Email: {warehouse_email} \nItem Name: {item_name} \nStart Date: {start_date}\nEnd Date: {end_date}\nQuantity: {quantity}" 
                     message = "Hello " + result[0]['first_name'] + "!! \n" +new_store+ "\n\nThanking You\nArth Detroja"        
                     from_email = settings.EMAIL_HOST_USER
                     to_list = [request.session['farmerEmail']]
-                    send_mail(subject, message, from_email, to_list, fail_silently=False) 
-                    return render(request, 'f-home.html')
+                    send_mail(subject, message, from_email, to_list, fail_silently=False)
+                    query = {'email': request.session.get('farmerEmail')}
+                    projection = {'first_name': 1, 'verified': 1, 'email': 1}
+
+                    users = farmer.find(query, projection)
+
+                    context = {
+                        'first_name': users[0]['first_name'],
+                        'email': users[0]['email']
+                    }
+                    messages.success(request, 'Reservation successful')
+                    return render(request, 'f-home.html', context=context)
                 else:
+                    context = {
+                        'items': items_list,
+                    }
                     messages.error(request, 'Quantity exceeds the warehouse limit')
-                    return redirect('farmer:makeReservation')
+                    return render(request, 'f-make-reservation.html', context=context)
             else:
+                context = {
+                    'items': items_list,
+                }
                 messages.error(request, "Enter details in all the fields")
-                return redirect('farmer:makeReservation')
+                return render(request, 'f-make-reservation.html', context=context)
         else:
             return render(request, 'f-error.html')
     else:
@@ -422,6 +417,8 @@ def showReservations(request):
         projection = {}
         items_stored_list = items_stored.find(query, projection)
 
+        for item in items_stored_list:
+            print(item)
         context = {
             'items': items_stored_list,
         }
@@ -477,8 +474,16 @@ def itemEntry(request):
                     'is_crop': is_crop_bool
                 })
 
+                query = {}
+                projection = {}
+
+                items_list = items.find(query, projection)
+
+                context = {
+                    'items': items_list,
+                }
                 messages.success(request, 'Item entered successfully')
-                return redirect('farmer:makeReservation')
+                return render(request, 'f-make-reservation.html', context=context)
             else:
                 messages.error(request, 'Enter details in all the fields')
                 return render(request, 'f-add-item.html')
@@ -492,14 +497,26 @@ def itemEntry(request):
 def modifyReservation(request, reservation_id):
     if request.session.get('isLoggedIn', False) == True:
 
-        query = {'reservation_id': reservation_id}
+        query = {
+            'reservation_id': reservation_id,
+            'farmer_email': request.session.get('farmerEmail')
+        }
         projection = {}
 
         reservation_check = items_stored.find(query, projection)
         
         if len(list(reservation_check.clone())) == 0:
+            query = {
+                'farmer_email': request.session.get('farmerEmail')
+            }
+            projection = {}
+            items_stored_list = items_stored.find(query, projection)
+
+            context = {
+                'items': items_stored_list,
+            }
             messages.error(request, 'Reservation not found!')
-            return redirect('farmer:showReservations')
+            return render(request, 'f-show-reservations.html', context=context)
 
         query = {}
         projection = {}
@@ -517,21 +534,26 @@ def modifyReservation(request, reservation_id):
 
 def deleteReservation(request, reservation_id):
     if request.session.get('isLoggedIn', False) == True:
-        query = {}
-        projection = {}
-
-        items_list = items.find(query, projection)
-
-        context = {
+        query = {
             'reservation_id': reservation_id,
-            'items': items_list,
+            'farmer_email': request.session.get('farmerEmail')
         }
-        
-
-        query = {'reservation_id': reservation_id}
         projection = {'reservation_id': 1, 'warehouse_email': 1, 'start_date': 1, 'end_date': 1, 'quantity': 1, 'item_name': 1}
         stores = items_stored.find(query, projection)
-        # print(items_list.item_name)
+
+        if len(list(stores.clone())) == 0:
+            query = {
+                'farmer_email': request.session.get('farmerEmail')
+            }
+            projection = {}
+            items_stored_list = items_stored.find(query, projection)
+
+            context = {
+                'items': items_stored_list,
+            }
+            messages.error(request, 'Reservation not found!')
+            return render(request, 'f-show-reservations.html', context=context)
+
         query = {'email': request.session['farmerEmail']}
         projection = {'email': 1, 'first_name': 1}
         result = farmer.find(query, projection)
@@ -542,8 +564,17 @@ def deleteReservation(request, reservation_id):
         to_list = [request.session['farmerEmail']]
         send_mail(subject, message, from_email, to_list, fail_silently=False) 
         items_stored.delete_one({'reservation_id': reservation_id})
+        query = {
+            'farmer_email': request.session.get('farmerEmail')
+        }
+        projection = {}
+        items_stored_list = items_stored.find(query, projection)
+
+        context = {
+            'items': items_stored_list,
+        }
         messages.success(request, 'Item deleted successfully')
-        return render(request, 'f-home.html', context=context)
+        return render(request, 'f-show-reservations.html', context=context)
     else:
         messages.error(request, 'You need to Login first!')
         return render(request, 'f-login.html')
@@ -551,6 +582,10 @@ def deleteReservation(request, reservation_id):
 def modifyReservationEntry(request, reservation_id):
     if request.session.get('isLoggedIn', False) == True:
         if request.method == 'POST':
+            query = {}
+            projection = {}
+
+            items_list = items.find(query, projection)
             if request.POST.get('warehouseEmail') and request.POST.get('itemName') and request.POST.get('startDate') and request.POST.get('endDate') and request.POST.get('quantity'):
                 warehouse_email = request.POST.get('warehouseEmail')
                 item_name = request.POST.get('itemName')
@@ -559,20 +594,34 @@ def modifyReservationEntry(request, reservation_id):
                 quantity = float(request.POST.get('quantity'))
 
 
-                query = {'reservation_id': reservation_id}
+                query = {
+                    'reservation_id': reservation_id,
+                    'farmer_email': request.session.get('farmerEmail')
+                }
                 projection = {}
 
                 reservation_check = items_stored.find(query, projection)
                 
 
                 if len(list(reservation_check.clone())) == 0:
+                    query = {
+                        'farmer_email': request.session.get('farmerEmail')
+                    }
+                    projection = {}
+                    items_stored_list = items_stored.find(query, projection)
+
+                    context = {
+                        'items': items_stored_list,
+                    }
                     messages.error(request, 'Reservation not found!')
-                    return redirect('farmer:showReservations')
+                    return render(request, 'f-show-reservations.html', context=context)
                     
                 # print(start_date)
                 # print(end_date)
 
-                query = {}
+                query = {
+                    'warehouse_email': warehouse_email
+                }
                 projection = {}
                 items_stored_list = items_stored.find(query, projection)
 
@@ -585,8 +634,12 @@ def modifyReservationEntry(request, reservation_id):
                 warehouse_details = warehouse.find(query, projection)
 
                 if len(list(warehouse_details.clone())) == 0:
+                    context = {
+                        'reservation_id': reservation_id,
+                        'items': items_list,
+                    }
                     messages.error(request, 'Warehouse not found!')
-                    return redirect('farmer:modifyReservation', reservation_id=reservation_id)
+                    return render(request, 'f-modify-reservation.html', context=context)
 
                 
                 quantity_stored = 0
@@ -599,8 +652,12 @@ def modifyReservationEntry(request, reservation_id):
                 # print(end_date_obj)
 
                 if start_date_obj > end_date_obj:
+                    context = {
+                        'reservation_id': reservation_id,
+                        'items': items_list,
+                    }
                     messages.error(request, 'Invalid start date and end date')
-                    return redirect('farmer:modifyReservation', reservation_id=reservation_id)
+                    return render(request, 'f-modify-reservation.html', context=context)
 
                 for i in items_stored_list:
                     if i['reservation_id'] != reservation_id:
@@ -610,7 +667,6 @@ def modifyReservationEntry(request, reservation_id):
                             quantity_stored += float(i['quantity'])
                 
                 if quantity_stored + quantity <= float(warehouse_details[0]['storage_capacity']):
-                    messages.success(request, 'Reservation modified successfully')
                     query = {'reservation_id': reservation_id}
                     newvalues = {
                         '$set': {
@@ -631,14 +687,31 @@ def modifyReservationEntry(request, reservation_id):
                     from_email = settings.EMAIL_HOST_USER
                     to_list = [request.session['farmerEmail']]
                     send_mail(subject, message, from_email, to_list, fail_silently=False) 
-                    return render(request, 'f-home.html')
+                    query = {
+                        'farmer_email': request.session.get('farmerEmail')
+                    }
+                    projection = {}
+                    items_stored_list = items_stored.find(query, projection)
+
+                    context = {
+                        'items': items_stored_list,
+                    }
+                    messages.success(request, 'Modify Reservation successful')
+                    return render(request, 'f-show-reservations.html', context=context)
                 else:
+                    context = {
+                        'reservation_id': reservation_id,
+                        'items': items_list,
+                    }
                     messages.error(request, 'Quantity exceeds the warehouse limit')
-                    return redirect('farmer:modifyReservation', reservation_id=reservation_id)
+                    return render(request, 'f-modify-reservation.html', context=context)
             else:
+                context = {
+                        'reservation_id': reservation_id,
+                        'items': items_list,
+                    }
                 messages.error(request, "Enter details in all the fields")
-                # return render(request, 'f-modify-reservation.html')
-                return redirect('farmer:modifyReservation', reservation_id=reservation_id)
+                return render(request, 'f-modify-reservation.html', context=context)
         else:
             return render(request, 'f-error.html')
     else:
@@ -683,6 +756,10 @@ def showCropSuggestions(request):
             'items': items_list,
         }
 
+        print("Info 1")
+
+        for x in items_list:
+            print(x)
         return render(request, 'f-show-crop-suggestions.html', context=context)
     else:
         messages.error(request, 'You need to Login first!')
@@ -817,6 +894,6 @@ def generateReport(request):
         else:
             return render(request, 'f-login.html')
     else:
-        messages.error(request, 'Log in First!')
+        messages.error(request, 'You need to log in First!')
         return render(request, 'f-login.html')
     

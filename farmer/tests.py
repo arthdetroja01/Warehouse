@@ -10,18 +10,23 @@ from pprint import pprint
 import uuid
 from unittest.mock import MagicMock, patch
 
+client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
+db = client['test']
+farmer = db['Farmer']
+warehouse = db['Warehouse']
+items_stored = db['Items_Stored']
+items = db['Items']
 
-
-def assertEqual(a, b):
-    if a != b:
-        print('Response: FAIL')
-    else:
-        print("Response: PASS")
-def assertTemplateUsed(response, template):
-    if template not in response.templates[0].name:
-        print('Template: FAIL')
-    else:
-        print("Template: PASS")
+# def assertEqual(a, b):
+#     if a != b:
+#         print('Response: FAIL')
+#     else:
+#         print("Response: PASS")
+# def assertTemplateUsed(response, template):
+#     if template not in response.templates[0].name:
+#         print('Template: FAIL')
+#     else:
+#         print("Template: PASS")
 
 # class IndexTestCase(TestCase):
 #     def setUp(self):
@@ -56,7 +61,7 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(response.status_code, 200)
         
 #         # Check that the correct template is used
-#         self.assertTemplateUsed(response, 'f-home.html')
+#         self.assertTemplateUsed(response, 'f-login.html')
 
 #     def test_login_with_not_logged_in_user(self):
 #         session = self.client.session
@@ -88,10 +93,6 @@ def assertTemplateUsed(response, template):
 
 # class LoginValidateTestCase(TestCase):
 #     def setUp(self):
-#         # Connect to MongoDB
-#         client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = client['test']
-#         self.farmer = db['Farmer']
 #         new_user1 = {
 #             'first_name': 'test',
 #             'last_name': 'test',
@@ -110,7 +111,7 @@ def assertTemplateUsed(response, template):
 #             'verified': False 
 #         }
 
-#         self.farmer.insert_many([new_user1, new_user2])
+#         farmer.insert_many([new_user1, new_user2])
 
         
 #     def test_valid_login(self):
@@ -179,7 +180,7 @@ def assertTemplateUsed(response, template):
 #         self.assertTemplateUsed(response, 'f-error.html')
 
 #     def tearDown(self):
-#         self.farmer.delete_many({})
+#         farmer.delete_many({})
 
 
 
@@ -198,18 +199,11 @@ def assertTemplateUsed(response, template):
 #         # Check that the correct template is used
 #         self.assertTemplateUsed(response, 'f-register.html')
 
-
 # class RegistrationTestCase(TestCase):
 #     def setUp(self):
 #         # Create a test client
 #         self.client = Client()
-
-#         # Connect to MongoDB
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.farmer = db['farmer']
-
-#         new_user1 = {
+#         self.new_user1 = {
 #             'first_name': 'test',
 #             'last_name': 'test',
 #             'email': 'test1@gmail.com',
@@ -217,8 +211,7 @@ def assertTemplateUsed(response, template):
 #             'phone_num': '8488887253',
 #             'verified': True   
 #         }
-
-#         self.farmer.insert_one(new_user1)
+#         farmer.insert_one(self.new_user1)
 
 #     def test_valid_registration(self):
 #         # Make a POST request to the view
@@ -232,14 +225,14 @@ def assertTemplateUsed(response, template):
 
 #         # Check that the response status code is 200
 #         self.assertEqual(response.status_code, 200)
-
+        
 #         # Check that the correct template is used
 #         self.assertTemplateUsed(response, 'f-login.html')
 
 #         # Check that the correct message is used
 #         messages = list(response.context.get('messages'))
 #         self.assertEqual(len(messages), 1)
-#         self.assertEqual(str(messages[0]), 'Registration successful')
+#         self.assertEqual(str(messages[0]), 'Registration successfull !! please check your email for verification')
 
 #     # Length less than 8
 #     def test_invalid_password1(self):
@@ -248,15 +241,15 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': 'tP1#345',
 #             'phoneNum': '8488887253'      
 #         })
 
 #         # Check that the response status code is 200
-#         assertEqual(response.status_code, 200)
+#         self.assertEqual(response.status_code, 200)
 
 #         # Check that the correct template is used
-#         assertTemplateUsed(response, 'f-register.html')
+#         self.assertTemplateUsed(response, 'f-register.html')
 
 #         # Check that the correct message is used
 #         messages = list(response.context.get('messages'))
@@ -270,20 +263,20 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': '',
 #             'phoneNum': '8488887253'      
 #         })
 
 #         # Check that the response status code is 200
-#         assertEqual(response.status_code, 200)
+#         self.assertEqual(response.status_code, 200)
 
 #         # Check that the correct template is used
-#         assertTemplateUsed(response, 'f-register.html')
+#         self.assertTemplateUsed(response, 'f-register.html')
 
 #         # Check that the correct message is used
 #         messages = list(response.context.get('messages'))
 #         self.assertEqual(len(messages), 1)
-#         self.assertEqual(str(messages[0]), 'Your password should be of length between 8 and 20 including atleast one uppercase, one lowercase, one number and one special character (@$!%*?&)')
+#         self.assertEqual(str(messages[0]), 'Enter details in all the fields')
 
 #     # Length greater than 20
 #     def test_invalid_password3(self):
@@ -292,7 +285,7 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': 'FOO123bar@#!FOO123bar',
 #             'phoneNum': '8488887253'      
 #         })
 
@@ -315,7 +308,7 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': 'foobarfoobar',
 #             'phoneNum': '8488887253'      
 #         })
 
@@ -337,7 +330,7 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': 'FOOBARFOOBAR',
 #             'phoneNum': '8488887253'      
 #         })
 
@@ -360,7 +353,7 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': '12345678',
 #             'phoneNum': '8488887253'    
 #         })
 
@@ -382,7 +375,7 @@ def assertTemplateUsed(response, template):
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test2@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': '@#@#@#@#!!!&&',
 #             'phoneNum': '8488887253'      
 #         })
 
@@ -397,14 +390,13 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(len(messages), 1)
 #         self.assertEqual(str(messages[0]), 'Your password should be of length between 8 and 20 including atleast one uppercase, one lowercase, one number and one special character (@$!%*?&)')
 
-
 #     def test_email_present(self):
 #         # Make a POST request to the view
 #         response = self.client.post('/farmer/register/entry', {
 #             'firstName': 'test',
 #             'lastName': 'test',
 #             'email': 'test1@gmail.com',
-#             'password': 'tP123@#456',
+#             'password': '@#456',
 #             'phoneNum': '8488887253'      
 #         })
 
@@ -422,7 +414,7 @@ def assertTemplateUsed(response, template):
 
 
 #     def tearDown(self):
-#         self.farmer.delete_many({})
+#         farmer.delete_many({})
 
 
 
@@ -451,9 +443,19 @@ def assertTemplateUsed(response, template):
 #         # Create a test client
 #         self.client = Client()
         
+#         self.new_user1 = {
+#             'first_name': 'test',
+#             'last_name': 'test',
+#             'email': 'test1@gmail.com',
+#             'password': 'testPass',
+#             'phone_num': '8488887253',
+#             'verified': True   
+#         }
+#         farmer.insert_one(self.new_user1)
 #         # Set up a session for testing
 #         session = self.client.session
 #         session['isLoggedIn'] = True
+#         session['farmerEmail'] = 'test1@gmail.com'
 #         session.save()
 
 #     def test_home_with_logged_in_user(self):
@@ -466,6 +468,10 @@ def assertTemplateUsed(response, template):
 #         # Check that the correct template is used
 #         self.assertTemplateUsed(response, 'f-home.html')
         
+#         # Check that context is present
+#         self.assertEqual(response.context['first_name'], 'test')
+#         self.assertEqual(response.context['email'], 'test1@gmail.com')
+
 #     def test_home_with_logged_out_user(self):
 #         # Remove isLoggedIn from the session
 #         session = self.client.session
@@ -506,6 +512,8 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(len(messages), 1)
 #         self.assertEqual(str(messages[0]), 'You need to login first!')
 
+#     def tearDown(self):
+#         farmer.delete_many({})
 
 # class SearchNearbyWarehousesTestCase(TestCase):
 #     def setUp(self):
@@ -575,11 +583,7 @@ def assertTemplateUsed(response, template):
 #         session['isLoggedIn'] = True
 #         session.save()
 
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.warehouse = db['Warehouse']
-
-#         self.warehouse.insert_many([
+#         warehouse.insert_many([
 #             {
 #                 'name': 'test1',
 #                 'latitude': 40.7128,
@@ -700,7 +704,7 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(str(messages[0]), 'You need to Login first!')
 
 #     def tearDown(self):
-#         self.warehouse.delete_many({})
+#         warehouse.delete_many({})
 
 
 # class MakeReservationTestCase(TestCase):
@@ -746,25 +750,18 @@ def assertTemplateUsed(response, template):
 #         session['farmerEmail'] = 'test2@gmail.com'
 #         session.save()
 
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.warehouse = db['Warehouse']
-#         self.farmer = db['Farmer']
-#         self.items = db['Items']
-#         self.items_stored = db['Items_Stored']
-
-#         self.warehouse.insert_one({
+#         warehouse.insert_one({
 #             'name': "test",
 #             'latitude': 12.4,
 #             'longitude': 12.3,
-#             'storage_capacity': 100,
+#             'storage_capacity': 100.0,
 #             'email': "test1@gmail.com",
 #             'verified': True,
 #             'password': 'password',
 #             'phone_number': '1234567890'
 #         })
 
-#         self.farmer.insert_one({
+#         farmer.insert_one({
 #             'first_name': 'test',
 #             'last_name': 'test',
 #             'phone_num': '1234567890',
@@ -773,7 +770,7 @@ def assertTemplateUsed(response, template):
 #             'verified': True
 #         })
 
-#         self.items.insert_one({
+#         items.insert_one({
 #             'name': 'test',
 #             'min_temperature': 39,
 #             'max_temperature': 67,
@@ -785,11 +782,11 @@ def assertTemplateUsed(response, template):
 #         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 #         reservation_id = str(uuid.uuid4())
-#         self.items_stored.insert_one({
+#         items_stored.insert_one({
 #             'reservation_id': reservation_id,
 #             'item_name': 'test',
 #             'warehouse_email': 'test1@gmail.com',
-#             'farmer_email': 'test2@gmail.com'
+#             'farmer_email': 'test2@gmail.com',
 #             'start_date': self.today,
 #             'end_date': self.tomorrow,
 #             'quantity': 10.0
@@ -815,7 +812,7 @@ def assertTemplateUsed(response, template):
 #                 'item_name': 'test',
 #                 'start_date': self.today,
 #                 'end_date': self.tomorrow,
-#                 'quantity': 90.0}], self.items_stored.find({
+#                 'quantity': 90.0}], items_stored.find({
 #                 'warehouse_email': 'test1@gmail.com',
 #                 'farmer_email': 'test2@gmail.com',
 #                 'item_name': 'test',
@@ -858,7 +855,7 @@ def assertTemplateUsed(response, template):
 
 #         self.assertEqual(response.status_code, 200)
 #         self.assertTemplateUsed(response, 'f-make-reservation.html')
-#          messages = list(response.context.get('messages'))
+#         messages = list(response.context.get('messages'))
 #         self.assertEqual(len(messages), 1)
 #         self.assertEqual(str(messages[0]), "Enter details in all the fields")
 
@@ -920,10 +917,10 @@ def assertTemplateUsed(response, template):
 #         self.assertTemplateUsed(response, 'f-make-reservation.html')
 
 #     def tearDown(self):
-#         self.warehouse.delete_many({'name': 'test'})
-#         self.farmer.delete_many({'first_name': 'test'})
-#         self.items.delete_many({'name': 'test'})
-#         self.items_stored.delete_many({'item_name': 'test'})
+#         warehouse.delete_many({'name': 'test'})
+#         farmer.delete_many({'first_name': 'test'})
+#         items.delete_many({'name': 'test'})
+#         items_stored.delete_many({'item_name': 'test'})
 
 
 # class ShowReservationsTestCase(TestCase):
@@ -931,11 +928,7 @@ def assertTemplateUsed(response, template):
 #         reservation_id = str(uuid.uuid4())
 #         self.today = datetime.now().strftime('%Y-%m-%d')
 #         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.items_stored = db['Items_Stored']
-
-#         self.items_stored.insert_one({
+#         items_stored.insert_one({
 #             'reservation_id': reservation_id,
 #             'item_name': 'test',
 #             'warehouse_email': 'test1@gmail.com',
@@ -957,7 +950,6 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(response.status_code, 200)
 #         self.assertTemplateUsed(response, 'f-show-reservations.html')
 #         self.assertIn('items', response.context)
-#         self.assertQuerysetEqual(self.items_stored.find({'farmer_email': 'test2@gmail.com'}, {}), response.context['items'])
 
 #     def test_show_reservations_unauthenticated(self):
 #         session = self.client.session
@@ -982,7 +974,7 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(str(messages[0]), 'You need to Login first!')
 
 #     def tearDown(self):
-#         self.items_stored.delete_many({})
+#         items_stored.delete_many({})
 
 
 # class AddItemTestCase(TestCase):
@@ -1027,11 +1019,7 @@ def assertTemplateUsed(response, template):
 #         session['isLoggedIn'] = True
 #         session.save()
 
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.items = db['Items']
-
-#         self.items.insert_one({
+#         items.insert_one({
 #             'name': 'test1',
 #             'min_temperature': 39,
 #             'max_temperature': 67,
@@ -1049,6 +1037,9 @@ def assertTemplateUsed(response, template):
 #         })
 
 #         self.assertEqual(response.status_code, 200)
+#         messages = list(response.context.get('messages'))
+#         self.assertEqual(len(messages), 1)
+#         self.assertEqual(str(messages[0]), 'Item entered successfully')
 #         self.assertTemplateUsed(response, 'f-make-reservation.html')
 
 #     def test_item_entry_authenticated_post_duplicate_item(self):
@@ -1116,7 +1107,7 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(str(messages[0]), 'You need to Login first!')
 
 #     def tearDown(self):
-#         self.items.delete_many({})
+#         items.delete_many({})
 
 
 
@@ -1130,14 +1121,11 @@ def assertTemplateUsed(response, template):
 #         session['isLoggedIn'] = True
 #         session['farmerEmail'] = 'test2@gmail.com'
 #         session.save()
-        
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.items_stored = db['Items_Stored']
+
 #         self.today = datetime.now().strftime('%Y-%m-%d')
 #         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 #         self.reservation_id = str(uuid.uuid4())
-#         self.items_stored.insert_one({
+#         items_stored.insert_one({
 #             'reservation_id': self.reservation_id,
 #             'item_name': 'test',
 #             'warehouse_email': 'test1@gmail.com',
@@ -1212,8 +1200,13 @@ def assertTemplateUsed(response, template):
 #         # Check that the correct template is used
 #         self.assertTemplateUsed(response, 'f-show-reservations.html')
 
+#         # Check that the error message is in the response
+#         messages = list(response.context.get('messages'))
+#         self.assertEqual(len(messages), 1)
+#         self.assertEqual(str(messages[0]), 'Reservation not found!')
+
 #     def tearDown(self):
-#         self.items_stored.delete_many({})
+#         items_stored.delete_many({})
 
 
 # class ModifyReservationEntryTestCase(TestCase):
@@ -1227,17 +1220,11 @@ def assertTemplateUsed(response, template):
 #         session['farmerEmail'] = 'test3@gmail.com'
 #         session.save()
         
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.warehouse = db['Warehouse']
-#         self.farmer = db['Farmer']
-#         self.items = db['Items']
-#         self.items_stored = db['Items_Stored']
 #         self.today = datetime.now().strftime('%Y-%m-%d')
 #         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 #         self.reservation_id = str(uuid.uuid4())
 
-#         self.warehouse.insert_many([{
+#         warehouse.insert_many([{
 #             'name': "test",
 #             'latitude': 12.4,
 #             'longitude': 12.3,
@@ -1257,7 +1244,7 @@ def assertTemplateUsed(response, template):
 #             'phone_number': '1234567890'
 #         }])
 
-#         self.farmer.insert_one({
+#         farmer.insert_one({
 #             'first_name': 'test',
 #             'last_name': 'test',
 #             'phone_num': '1234567890',
@@ -1266,7 +1253,7 @@ def assertTemplateUsed(response, template):
 #             'verified': True
 #         })
 
-#         self.items.insert_one({
+#         items.insert_one({
 #             'name': 'test',
 #             'min_temperature': 39,
 #             'max_temperature': 67,
@@ -1274,7 +1261,7 @@ def assertTemplateUsed(response, template):
 #             'is_crop': True
 #         })
 
-#         self.items_stored.insert_one({
+#         items_stored.insert_one({
 #             'reservation_id': self.reservation_id,
 #             'item_name': 'test',
 #             'warehouse_email': 'test1@gmail.com',
@@ -1293,20 +1280,20 @@ def assertTemplateUsed(response, template):
 #         }, follow=True)
 
 #         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'f-home.html')
+#         self.assertTemplateUsed(response, 'f-show-reservations.html')
 #         self.assertQuerysetEqual([{
 #                 'warehouse_email': 'test2@gmail.com',
 #                 'farmer_email': 'test3@gmail.com',
 #                 'item_name': 'test',
 #                 'start_date': self.today,
 #                 'end_date': self.tomorrow,
-#                 'quantity': 10.0}], self.items_stored.find({
+#                 'quantity': 90.0}], items_stored.find({
 #                 'warehouse_email': 'test2@gmail.com',
 #                 'farmer_email': 'test3@gmail.com',
 #                 'item_name': 'test',
 #                 'start_date': self.today,
 #                 'end_date': self.tomorrow,
-#                 'quantity': 10.0
+#                 'quantity': 90.0
 #             }, {'_id': 0, 'reservation_id': 0}))
 
 #     def test_reservation_entry_insufficient_capacity(self):
@@ -1344,7 +1331,6 @@ def assertTemplateUsed(response, template):
 #         self.assertTemplateUsed(response, 'f-modify-reservation.html')
 
 #     def test_reservation_entry_unauthenticated(self):
-#         self.client = Client()
 #         session = self.client.session
 #         session['isLoggedIn'] = False
 #         session.save()
@@ -1365,7 +1351,6 @@ def assertTemplateUsed(response, template):
 #         self.assertEqual(str(messages[0]), 'You need to Login first!')
 
 #     def test_reservation_entry_anonymous_user(self):
-#         self.client = Client()
 #         session = self.client.session
 #         del session['isLoggedIn']
 #         session.save()
@@ -1409,14 +1394,14 @@ def assertTemplateUsed(response, template):
 #             'endDate': self.tomorrow,
 #         }, follow=True)
 #         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'f-show-reservations.html')
+#         self.assertTemplateUsed(response, 'f-modify-reservation.html')
 
 
 #     def tearDown(self):
-#         self.warehouse.delete_many({'name': 'test'})
-#         self.farmer.delete_many({'first_name': 'test'})
-#         self.items.delete_many({'name': 'test'})
-#         self.items_stored.delete_many({'item_name': 'test'})
+#         warehouse.delete_many({'name': 'test'})
+#         farmer.delete_many({'first_name': 'test'})
+#         items.delete_many({'name': 'test'})
+#         items_stored.delete_many({'item_name': 'test'})
 
     
 
@@ -1428,13 +1413,7 @@ def assertTemplateUsed(response, template):
 #         session['isLoggedIn'] = True
 #         session.save()
 
-        
-#         mongo_client = MongoClient('mongodb+srv://arth01:passadmin@cluster0.z4s5bj0.mongodb.net/?retryWrites=true&w=majority')
-#         db = mongo_client['test']
-#         self.items_stored = db['Items_Stored']
-#         self.items = db['Items']
-
-#         self.items.insert_many([{
+#         items.insert_many([{
 #             'name': 'test1',
 #             'min_temperature': 39,
 #             'max_temperature': 67,
@@ -1457,7 +1436,7 @@ def assertTemplateUsed(response, template):
 
 #         self.today = datetime.now().strftime('%Y-%m-%d')
 #         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-#         self.items_stored.insert_many([{
+#         items_stored.insert_many([{
 #             'reservation_id': str(uuid.uuid4()),
 #             'item_name': 'test1',
 #             'warehouse_email': 'test1@gmail.com',
@@ -1495,7 +1474,6 @@ def assertTemplateUsed(response, template):
 #         response = self.client.get('/farmer/show-crop-suggestions')
 #         self.assertEqual(response.status_code, 200)
 #         self.assertTemplateUsed(response, 'f-show-crop-suggestions.html')
-
 #         self.assertQuerysetEqual(response.context['items'], [
 #             {'name': 'test1', 'totQty': 23.0},
 #             {'name': 'test2', 'totQty': 33.0}
@@ -1527,6 +1505,105 @@ def assertTemplateUsed(response, template):
 
 
 #     def tearDown(self):
-#         self.items_stored.delete_many({})
-#         self.items.delete_many({})
+#         items_stored.delete_many({})
+#         items.delete_many({})
 
+
+# class DeleteReservationTestCase(TestCase):
+#     def setUp(self):
+#         # Create a test client
+#         self.client = Client()
+        
+#         # Set up a session for testing
+#         session = self.client.session
+#         session['isLoggedIn'] = True
+#         session['farmerEmail'] = 'test2@gmail.com'
+#         session.save()
+
+#         farmer.insert_one({
+#             'first_name': 'test',
+#             'last_name': 'test',
+#             'phone_num': '1234567890',
+#             'email': 'test2@gmail.com',
+#             'password': 'password',
+#             'verified': True
+#         })
+#         self.today = datetime.now().strftime('%Y-%m-%d')
+#         self.tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+#         self.reservation_id = str(uuid.uuid4())
+#         items_stored.insert_one({
+#             'reservation_id': self.reservation_id,
+#             'item_name': 'test',
+#             'warehouse_email': 'test1@gmail.com',
+#             'farmer_email': 'test2@gmail.com',
+#             'start_date': self.today,
+#             'end_date': self.tomorrow,
+#             'quantity': 11.0
+#         })
+
+#     def test_modify_reservation_with_logged_in_user(self):
+#         # Make a GET request to the view
+#         response = self.client.get(f'/farmer/delete-reservation/{self.reservation_id}')
+        
+#         # Check that the response status code is 200
+#         self.assertEqual(response.status_code, 200)
+        
+#         # Check that the correct template is used
+#         self.assertTemplateUsed(response, 'f-show-reservations.html')
+        
+#     def test_modify_reservation_with_logged_out_user(self):
+#         # Remove isLoggedIn from the session
+#         session = self.client.session
+#         session['isLoggedIn'] = False
+#         session.save()
+        
+#         # Make a GET request to the view
+#         response = self.client.get(f'/farmer/delete-reservation/{self.reservation_id}')
+        
+#         # Check that the response status code is 200
+#         self.assertEqual(response.status_code, 200)
+        
+#         # Check that the correct template is used
+#         self.assertTemplateUsed(response, 'f-login.html')
+        
+#         # Check that the error message is in the response
+#         messages = list(response.context.get('messages'))
+#         self.assertEqual(len(messages), 1)
+#         self.assertEqual(str(messages[0]), 'You need to Login first!')
+    
+#     def test_modify_reservation_with_anonymous_user(self):
+#         # Remove isLoggedIn from the session
+#         session = self.client.session
+#         del session['isLoggedIn']
+#         session.save()
+        
+#         # Make a GET request to the view
+#         response = self.client.get(f'/farmer/delete-reservation/{self.reservation_id}')
+        
+#         # Check that the response status code is 200
+#         self.assertEqual(response.status_code, 200)
+        
+#         # Check that the correct template is used
+#         self.assertTemplateUsed(response, 'f-login.html')
+        
+#         # Check that the error message is in the response
+#         messages = list(response.context.get('messages'))
+#         self.assertEqual(len(messages), 1)
+#         self.assertEqual(str(messages[0]), 'You need to Login first!')
+        
+#     def test_invalid_reservation_id(self):
+#         response = self.client.get('/farmer/delete-reservation/1')
+
+#         # Check that the correct template is used
+#         self.assertEqual(response.status_code, 200)
+
+#         # Check that the correct template is used
+#         self.assertTemplateUsed(response, 'f-show-reservations.html')
+
+#         # Check that the error message is in the response
+#         messages = list(response.context.get('messages'))
+#         self.assertEqual(len(messages), 1)
+#         self.assertEqual(str(messages[0]), 'Reservation not found!')
+
+#     def tearDown(self):
+#         items_stored.delete_many({})

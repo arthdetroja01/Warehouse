@@ -30,9 +30,6 @@
 				<li><a class="nav--item black--text" href="{% url 'warehouse:index' %}">Home</a></li>
 				<li><a class="nav--item" href="{% url 'warehouse:contact' %}">Contacts</a></li>
 				<li><a class="nav--item" href="{% url 'warehouse:aboutus' %}">About Us</a></li>
-				<li>
-					<a class="nav--item Service--button" href="{% url 'home:home' %}">Services</a>
-				</li>
 			</ul>
         </nav>
     {% if messages %}
@@ -57,7 +54,7 @@
             <form action="{% url 'warehouse:loginValidate'%}" method="post" class="form">
                 {% csrf_token %}
 
-            <h2 class="heading"><span>Worker</span> Login</h2>
+            <h2 class="heading"><span>Warehouse</span> Login</h2>
             <div class="input--container">
                 <h5 class="input--label">Email</h5>
                 <input type="email" id="email" name="email" class="box" >
