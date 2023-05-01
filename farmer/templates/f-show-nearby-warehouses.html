@@ -192,12 +192,12 @@
 				<div class="map--container">
 					<div class="warehouse--locations--div">
 						<h4 class="area--location">
-							Results for
+							Results with {{ distance }} km
 							<strong class="area--location-text"></strong>
 							:
 						</h4>
 						<div class="Warehouse--locations">
-							{% comment %} For loop here0 {% endcomment %}
+							<!-- {% comment %} For loop here0 {% endcomment %} -->
 							{% for warehouse in warehouse_list %}
 							<div class="warehouse-location">
 								<h4 class="warehouse--name">{{warehouse.name}}</h4>

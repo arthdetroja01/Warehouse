@@ -347,30 +347,30 @@ main {
 }
 
 .area--location {
-  font-size: 1.2rem;
-  font-weight: 400;
+  font-size: 1.6rem;
+  font-weight: 600;
 }
 
 .Warehouse--locations {
+  overflow: hidden;
   overflow-y: scroll;
   height: 56vh;
   margin-top: 2rem;
-  display: flex;
+  /* display: flex; */
   justify-content: center;
   flex-direction: column;
+  /* padding-bottom: 50rem; */
 }
 
 
 .warehouse-location {
   width: 90%;
   height: fit-content;
-  padding: 2rem 2.4rem;
+  padding: 2rem 0.8rem;
 
   background-color: #ccc;
 
   border-radius: 8px;
-
-  overflow: hidden;
 }
 
 .warehouse--image {
@@ -394,7 +394,7 @@ main {
 }
 
 .details--div--heading {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 600;
 }
 
@@ -426,7 +426,7 @@ main {
 
 .deatils--info {
   font-weight: 400;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   margin-left: 0.4rem;
 }
 

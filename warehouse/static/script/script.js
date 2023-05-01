@@ -2,6 +2,9 @@
 
 const startDateEl = document.getElementById("startDate");
 const endDateEl = document.getElementById("endDate");
+const endDateBlock = document.getElementById("endDateBlck");
+
+endDateEl.disabled = true;
 
 let date = new Date();
 
@@ -20,7 +23,28 @@ if (month < 10) {
 let startDate = year + "-" + month + "-" + tdate;
 startDateEl.setAttribute("min", startDate);
 
+startDateEl.addEventListener("change", function () {
+	const checkvalue = $("#startDate").val();
+	if (checkvalue) {
+		console.log(checkvalue);
+		endDateEl.disabled = false;
+	}
+});
+
 endDateEl.addEventListener("click", function () {
 	const endDate = $("#startDate").val();
-	endDateEl.setAttribute("min", endDate);
+	if (endDate !== null) {
+		endDateEl.setAttribute("min", endDate);
+	}
+});
+
+endDateBlock.addEventListener("mouseover", function () {
+	console.log("move");
+	const checkvalue = $("#startDate").val();
+	if (checkvalue) {
+		console.log(checkvalue);
+		endDateEl.disabled = false;
+	} else {
+		endDateEl.disabled = true;
+	}
 });
